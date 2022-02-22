@@ -13,9 +13,9 @@ layout = [
             [sg.Button('INTERNET',size=(largura,altura),) , sg.Button('DNS',size=(largura,altura))],
             [sg.Button('DISCO',size=(largura,altura)), sg.Button('SCAN',size=(largura,altura))],
             [sg.Button('LIMPAR',size=(largura,altura)),sg.Button('REMOVER ATUALIZAÇÕES 65/70',size=(largura,altura))],
-            [sg.Button('BACKUP',size=(36,2),),],
+            [sg.Button('BACKUP',size=(36,altura),),],
             [sg.Button('SAIR',size=(36,1),button_color='#FFAAAA'),],            
-            [sg.Text('Desenvolvido por: Jairo Nonato Júnior')],
+            [sg.Text('Desenvolvido por: Jairo Nonato Júnior \nVersão: 0.0.3')],
             [sg.Text('GitHub: JaiJunior', enable_events=True, key='github')]
             ],
 
@@ -61,8 +61,11 @@ while True:
         sg.popup_ok('Processo Finalizado') 
 
     if event == 'BACKUP':
-        pasta = sg.popup_get_folder('Escolha a Pasta Para Backup')
-        subprocess.run(f'7z a -t7z  "\\\suporte03\PROGRAMAS\BKP\%username%_%date:~6,4%-%date:~3,2%_%date:~0,2%" "{pasta}"', shell=True)                  
-        sg.popup_ok('Processo Finalizado') 
+        pasta = sg.popup_get_folder('Escolha a Pasta Para Backup')        
+        if pasta =='':
+            sg.popup_ok('Insira uma pasta válida\nProcesso Finalizado')
+        else:
+            subprocess.run(f'7z a -t7z  "\\\suporte03\PROGRAMAS\BKP\%username%_%date:~6,4%-%date:~3,2%_%date:~0,2%" "{pasta}"', shell=True)
+            sg.popup_ok('Processo Finalizado') 
 
 window.close()

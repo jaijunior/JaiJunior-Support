@@ -4,28 +4,63 @@ import PySimpleGUI as sg
 import subprocess
 import os, sys
 
-largura = 17
-altura = 2
-sg.theme('DarkAmber')   # Add a touch of color
+# Layouts
+def window1():
+    largura = 17
+    altura = 2
+    sg.theme('LightGrey2')  
+    layout = [  
+                [sg.Button('INTERNET',size=(largura,altura),) , sg.Button('DNS',size=(largura,altura))],
+                [sg.Button('DISCO',size=(largura,altura)), sg.Button('SCAN',size=(largura,altura))],
+                [sg.Button('LIMPAR',size=(largura,altura)),sg.Button('REMOVER ATUALIZAÇÕES 65/70',size=(largura,altura))],
+                [sg.Button('BACKUP',size=(largura,altura)),sg.Button('INSTALAR PROGRAMA', size=(largura,altura))],
+                [sg.Button('SAIR',size=(36,1), focus=True),],            
+                [sg.Text('Desenvolvido por: Jairo Nonato Júnior \nVersão: 0.0.3')],
+                [sg.Text('GitHub: JaiJunior', enable_events=True, key='github')]
+                ],
+    return sg.Window('JaiJunior Support',layout, finalize=True)
 
-# All the stuff inside your window.
-layout = [  
-            [sg.Button('INTERNET',size=(largura,altura),) , sg.Button('DNS',size=(largura,altura))],
-            [sg.Button('DISCO',size=(largura,altura)), sg.Button('SCAN',size=(largura,altura))],
-            [sg.Button('LIMPAR',size=(largura,altura)),sg.Button('REMOVER ATUALIZAÇÕES 65/70',size=(largura,altura))],
-            [sg.Button('BACKUP',size=(36,altura),),],
-            [sg.Button('SAIR',size=(36,1),button_color='#FFAAAA'),],            
-            [sg.Text('Desenvolvido por: Jairo Nonato Júnior \nVersão: 0.0.3')],
-            [sg.Text('GitHub: JaiJunior', enable_events=True, key='github')]
-            ],
+def instalar():
+    altura = 2
+    largura= 15
+    layout = [
+        [sg.Text('COMUNS', size=(largura, altura)), sg.Text('TRATAMENTO DE IMAGEM', size=(largura, altura)), sg.Text('UTILITÁRIOS', size=(largura,altura))],
+        [sg.Check('Firefox', key='FF', size=(largura, altura)), sg.Check('GIMP', key='GIMP',size=(largura,altura)), sg.Check('Java jre8', key='JAVA8', size=(largura,altura))],
+        [sg.Check('Google Chrome', key='GC',size=(largura,altura))],
+        [sg.Check('Winrar',  key='WR')],
+        [sg.Check('MS Office',  key='MO')],
+        [sg.Check('OnlyOffice',  key='OO')],
+        [sg.Check('Adobe Reader',  key='AR')],
+        [sg.Check('Driver Booster', key='DB')],
+        [sg.Check('MalwareBytes',  key='MB')],
+        [sg.Check('Zoom',  key='ZM')],
+        [sg.Check('MS Teams',  key='MT')],
+        [sg.Button('Instalar'),sg.Button('Voltar')]        
+    ]
+    return sg.Window('JaiJunior Support - INSTALAR PROGRAMAS',layout, finalize=True)
 
-# Create the Window
-window = sg.Window('JaiJunior Support', layout)
-# Event Loop to process "events" and get the "values" of the inputs
+
+# JANELAS PRINCIPAIS
+
+janela1 = window1()
+janela2 = None
+
+# Loop de Leitura de Eventos
 while True:
-    event, values = window.read()
-    if event == sg.WIN_CLOSED or event == 'SAIR': # if user closes window or clicks cancel
+    window, event, values = sg.read_all_windows()
+    #jANELA VAI VOLTA E FECHA
+    if window == janela1 and event == sg.WIN_CLOSED or event == 'SAIR': # if user closes window or clicks cancel
         break
+    if window == janela1 and event == 'INSTALAR PROGRAMA':
+        janela2 = instalar()
+        janela1.hide()
+    if window == janela2 and event == sg.WIN_CLOSED:
+        break
+    if window == janela2 and event == 'Voltar':
+        janela2.hide()
+        janela1.un_hide()
+    
+    # EVENTOS DA PAGINA PRINCIPAL
     if event == 'INTERNET':
         subprocess.run('ipconfig /release',shell=True)
         subprocess.run('ipconfig /renew',shell=True)
@@ -36,7 +71,7 @@ while True:
         sg.popup_ok('Processo Finalizado')
     if event == 'DISCO':
         subprocess.run('chkdsk /f',shell=True)                
-        window.bring_to_front()
+        window1.bring_to_front()
         sg.popup_ok('Processo Finalizado')
     if event == 'SCAN':
         subprocess.run('sfc /scannow',shell=True)
@@ -67,5 +102,32 @@ while True:
         else:
             subprocess.run(f'7z a -t7z  "\\\suporte03\PROGRAMAS\BKP\%username%_%date:~6,4%-%date:~3,2%_%date:~0,2%" "{pasta}"', shell=True)
             sg.popup_ok('Processo Finalizado') 
+     
+    ## EVENTOS DA SEGUNDA PÁGINA
 
-window.close()
+    if window == janela2 and event == 'Instalar':
+        subprocess.run("powershell Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))", shell=True)
+        if values['FF'] == True:
+            subprocess.run('choco install firefox -y', shell=True)
+        if values['WR'] == True:       
+            subprocess.run('choco install winrar -y', shell=True)
+        if values['MO'] == True:
+            subprocess.run('choco install officeproplus2013 -y', shell=True)
+        if values['OO'] == True:
+            subprocess.run('choco install onlyoffice -y', shell=True)
+        if values['AR'] == True:
+            subprocess.run('choco install adobereader -y', shell=True)
+        if values['DB'] == True:
+            subprocess.run('choco install driverbooster -y', shell=True)
+        if values['MB'] == True:             
+            subprocess.run('choco install malwarebytes -y', shell=True)
+        if values['MT'] == True:
+            subprocess.run('choco install microsoft-teams -y', shell=True)
+        if values['ZM'] == True:
+            subprocess.run('choco install zoom -y', shell=True)
+        if values['GIMP'] == True:
+            subprocess.run('choco install gimp -y', shell=True)
+        if values['GC'] == True:
+            subprocess.run('choco install googlechrome -y', shell=True)
+        sg.popup('Processo Finalizado')
+
